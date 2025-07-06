@@ -2,14 +2,26 @@ import { useState } from 'react'
 import './App.css'
 import Card from './components/Card'
 import Header from './components/Header';
+import axios from 'axios';
 
 function App() {
   let [ users , setUsers ] = useState([]);
   let [inputUser , setInputUser] = useState("")
   let [ showUers , setShowUsers] = useState(false);
+  let [validUsers , setValidUsers] = useState([])
 
-  const getUserData = ()=>{
+  const getUserData =async ()=>{
+    let data = users.map( async(user,index)=>{
+      const response = await axios.get(`https://api.github.com/users/${user}`)
+      //const data = await  response.json(); fuc*  this only works for fetch()
+      //nsole.log(response)
+      return response
+      
 
+    }  )
+    data = await Promise.all(data) //   remember this nig -->used to convert promises  
+    console.log(data)
+    setValidUsers(data)
   }
 
   const handleChange = (e)=>{
@@ -102,7 +114,36 @@ function App() {
           </div>
         )}
       </div>
+
+      <button onClick={getUserData}  className='px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-600 text-white font-semibold rounded-lg hover:from-blue-600 hover:to-purple-700 transform hover:scale-105 transition-all duration-200 shadow-md'  >Generate Cards</button>
+
+      {validUsers.length > 0 && (
+          <div className="bg-white rounded-2xl shadow-lg p-8">
+            <h3 className="text-xl font-bold text-gray-800 mb-6 flex items-center">
+              <span className="w-2 h-2 bg-blue-500 rounded-full mr-3"></span>
+              GitHub Profile Cards ({validUsers.length})
+            </h3>
+            
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+              {validUsers.map((user, index) => (
+                <Card 
+                  key={index}
+                  name={  user.data.name ||user.data.login}
+                  username={`@${user.data.login}`}
+                  avatar={user.data.avatar_url}
+                  bio={user.data.bio}
+                  repos={user.data.public_repos}
+                  followers={user.data.followers}
+                  following={user.data.following}
+                  joinedDate={new Date(user.data.created_at).getFullYear()}
+                />
+              ))}
+            </div>
+          </div>
+        )}
     </div>
+
+    
   )
 }
 
