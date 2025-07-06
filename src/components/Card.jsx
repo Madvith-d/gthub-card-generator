@@ -7,10 +7,12 @@ const Card= (props)=>{
     console.log(props)
 
     return(
-        <>
-            <h1>Hello</h1>        
-        
-        </>
+        <div>
+            <img src="" alt="" />
+            <h1></h1>
+            <h4></h4>
+            <h4></h4>
+        </div>
     )
 }
 
